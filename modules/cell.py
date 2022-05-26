@@ -1,12 +1,14 @@
 class Cell:
-    def __init__(self) -> None:
+    def __init__(self, x: int, y: int) -> None:
         self.state = 0 # 0 - dead, 1 - alive
         self.state_next = None
-        self.adjacentCells = None
+        self.adjacent_cells = None
+        self.x = x
+        self.y = y
 
-    def calculateNextState(self) -> None:
+    def calculate_next_state(self) -> None:
         sum = 0
-        for cell in self.adjacentCells:
+        for cell in self.adjacent_cells:
             sum += int(cell)
 
         if sum == 3:
@@ -22,3 +24,6 @@ class Cell:
     # For simple next state calculation
     def __int__(self):
         return self.state
+
+    def __str__(self) -> str:
+        return f"Cell at ({self.x}, {self.y}), with state {self.state}"
