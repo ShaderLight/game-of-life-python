@@ -65,3 +65,8 @@ class Board:
             selected_cell.state = 1
         else:
             selected_cell.state = 0
+
+    def reset_all(self) -> None:
+        for row in self.cells:
+            for cell in row:
+                cell.reset()

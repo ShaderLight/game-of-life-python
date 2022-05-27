@@ -28,6 +28,10 @@ class Cell:
         self.state = self.state_next
         self.state_next = None
 
+    def reset(self) -> None:
+        self.state = 0
+        self.state_next = None
+
     # For simple next state calculation
     def __int__(self):
         return self.state
