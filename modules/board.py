@@ -1,4 +1,3 @@
-from turtle import width
 from cell import Cell
 
 class Board:
@@ -31,3 +30,13 @@ class Board:
                 actual_coords.append(pair)
 
         return actual_coords.copy()
+    
+    def calculate_next_state_all(self) -> None:
+        for row in self.cells:
+            for cell in row:
+                cell.calculate_next_state()
+
+    def switch_to_next_state_all(self) -> None:
+        for row in self.cells:
+            for cell in row:
+                cell.switch_to_next_state()

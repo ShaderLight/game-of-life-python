@@ -21,9 +21,20 @@ class Cell:
 
         self.state_next = 0
 
+    def switch_to_next_state(self) -> None:
+        if self.state_next == None:
+            raise NextStateNotCalculatedError
+
+        self.state = self.state_next
+        self.state_next = None
+
     # For simple next state calculation
     def __int__(self):
         return self.state
 
     def __str__(self) -> str:
         return f"Cell at ({self.x}, {self.y}), with state {self.state}"
+
+
+class NextStateNotCalculatedError(Exception):
+    pass
