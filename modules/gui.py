@@ -29,6 +29,7 @@ class App(tk.Frame):
         reset_button.grid(row=0, column=0)
 
         next_state = tk.Button(button_frame, text='Next state')
+        next_state.bind('<Button>', self.next_state_handler)
         next_state.grid(row=0, column=1)
 
         button_frame.grid_columnconfigure((0,1), weight=1, uniform="column")
@@ -49,7 +50,12 @@ class App(tk.Frame):
 
     def update_gui_cells(self) -> None:
         for key, value in self.cell_window.children.items():
-            pass
+            x = value.grid_info()['column']
+            y = value.grid_info()['row']
+            if self.board.state_at(x, y) == 1:
+                value.configure({"background": "Black"})
+            else:
+                value.configure({"background": "White"})
     
     def reset_last_painted_handler(self, event) -> None:
         self.last_painted = None
@@ -80,3 +86,8 @@ class App(tk.Frame):
             widget.configure({"background": "White"})
 
         self.board.reset_all()
+    
+    def next_state_handler(self, event) -> None:
+        self.board.calculate_next_state_all()
+        self.board.switch_to_next_state_all()
+        self.update_gui_cells()
