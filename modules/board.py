@@ -1,4 +1,6 @@
-from cell import Cell
+import logging
+
+from .cell import*
 
 class Board:
     def __init__(self, width: int, height: int) -> None:
@@ -20,7 +22,8 @@ class Board:
         for y in range(self.height):
             for x in range(self.width):
                 for pair in self.get_neighbouring_coords(x, y):
-                    self.cells[y][x] = self.cells[pair[1]][pair[0]]
+                    self.cells[y][x].adjacent_cells.append (self.cells[pair[1]][pair[0]])
+                logging.debug(f"Cell ({x},{y}) received references to neighbours")
 
     def get_neighbouring_coords(self, x: int, y: int) -> list[tuple[int]]:
         possible_coords = [(x, y+1), (x+1, y+1), (x+1, y), (x+1, y-1), (x, y-1), (x-1, y-1), (x-1, y), (x-1, y+1)]
@@ -45,12 +48,20 @@ class Board:
     def state_at(self, x: int, y: int) -> int:
         return self.cells[y][x].state
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         output = ""
         for y in range(self.height):
             temp_row = ""
             for x in range(self.width):
-                temp_row += f"{self.cells[y][x]} "
+                temp_row += f"{self.cells[y][x].state} "
             output += temp_row[:-1] + "\n"
         
         return output
+
+    def toggle_cell_at(self, x: int, y: int) -> None:
+        selected_cell = self.cells[y][x]
+
+        if selected_cell.state == 0:
+            selected_cell.state = 1
+        else:
+            selected_cell.state = 0

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from board import*
+from .board import*
 
 
 class App(tk.Frame):
