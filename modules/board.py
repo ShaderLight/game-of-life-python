@@ -58,13 +58,15 @@ class Board:
         
         return output
 
-    def toggle_cell_at(self, x: int, y: int) -> None:
+    def toggle_cell_at(self, x: int, y: int) -> int:
         selected_cell = self.cells[y][x]
 
         if selected_cell.state == 0:
             selected_cell.state = 1
+            return 1
         else:
             selected_cell.state = 0
+            return 0
 
     def reset_all(self) -> None:
         for row in self.cells:
