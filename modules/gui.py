@@ -25,6 +25,7 @@ class App(tk.Frame):
         button_frame = tk.Frame(self)
 
         reset_button = tk.Button(button_frame, text='Reset')
+        reset_button.bind('<Button>', self.reset_all_handler)
         reset_button.grid(row=0, column=0)
 
         next_state = tk.Button(button_frame, text='Next state')
@@ -73,3 +74,9 @@ class App(tk.Frame):
             widget.configure({"background": "White"})
 
         self.last_painted = (x, y)
+
+    def reset_all_handler(self, event) -> None:
+        for widget in self.cell_window.grid_slaves():
+            widget.configure({"background": "White"})
+
+        self.board.reset_all()
