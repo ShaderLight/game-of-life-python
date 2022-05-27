@@ -7,6 +7,7 @@ class Board:
         self.cells = []
 
         self.generate_cells()
+        self.assign_neighbours()
     
     def generate_cells(self):
         for y in range(self.height):
@@ -40,3 +41,16 @@ class Board:
         for row in self.cells:
             for cell in row:
                 cell.switch_to_next_state()
+
+    def state_at(self, x: int, y: int) -> int:
+        return self.cells[y][x].state
+
+    def __str__(self) -> str:
+        output = ""
+        for y in range(self.height):
+            temp_row = ""
+            for x in range(self.width):
+                temp_row += f"{self.cells[y][x]} "
+            output += temp_row[:-1] + "\n"
+        
+        return output
