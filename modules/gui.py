@@ -107,5 +107,9 @@ class App(tk.Frame):
 
     def load_board_handler(self):
         filename = fd.askopenfilename(defaultextension=".json", filetypes=[("All Files","*.*"),("JSON File","*.json")])
-        self.board.load_from_file(filename)
-        self.update_gui_cells()
+        status = self.board.load_from_file(filename)
+
+        if status == -1:
+            tk.messagebox.showerror(title='Error loading data', message='Save file dimensions don\'t match window dimensions!')
+        else:
+            self.update_gui_cells()
