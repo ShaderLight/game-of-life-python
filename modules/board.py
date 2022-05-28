@@ -1,4 +1,5 @@
 import logging
+import json
 
 from .cell import*
 
@@ -58,6 +59,16 @@ class Board:
         
         return output
 
+    def __str__(self) -> str:
+        output = ""
+        for y in range(self.height):
+            temp_row = ""
+            for x in range(self.width):
+                temp_row += f"{self.cells[y][x].state} "
+            output += temp_row[:-1] + "\n"
+        
+        return output
+
     def toggle_cell_at(self, x: int, y: int) -> int:
         selected_cell = self.cells[y][x]
 
@@ -72,3 +83,17 @@ class Board:
         for row in self.cells:
             for cell in row:
                 cell.reset()
+
+    def get_serialized_cells(self):
+        serialized = []
+
+        for row in self.cells:
+            for cell in row:
+                serialized.append(int(cell))
+
+        return serialized
+
+    def save_to_file(self, filename):
+        with open(filename, mode='w') as f:
+            to_dump = {'width': self.width, 'height': self.height, 'cells': self.get_serialized_cells()}
+            json.dump(to_dump, f, indent=4)

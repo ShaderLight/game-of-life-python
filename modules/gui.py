@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog as fd
 import logging
 from turtle import width
 
@@ -24,13 +25,17 @@ class App(tk.Frame):
     def set_up_button_frame(self) -> None:
         button_frame = tk.Frame(self)
 
+        save_button = tk.Button(button_frame, text='Save')
+        save_button.bind('<Button>', self.save_board_handler)
+        save_button.grid(row=0, column=0)
+
         reset_button = tk.Button(button_frame, text='Reset')
         reset_button.bind('<Button>', self.reset_all_handler)
-        reset_button.grid(row=0, column=0)
+        reset_button.grid(row=0, column=1)
 
         next_state = tk.Button(button_frame, text='Next state')
         next_state.bind('<Button>', self.next_state_handler)
-        next_state.grid(row=0, column=1)
+        next_state.grid(row=0, column=2)
 
         button_frame.grid_columnconfigure((0,1), weight=1, uniform="column")
 
@@ -91,3 +96,7 @@ class App(tk.Frame):
         self.board.calculate_next_state_all()
         self.board.switch_to_next_state_all()
         self.update_gui_cells()
+
+    def save_board_handler(self, event):
+        filename = fd.asksaveasfilename(initialfile = 'saved.json', defaultextension=".json", filetypes=[("All Files","*.*"),("JSON File","*.json")])
+        self.board.save_to_file(filename)
