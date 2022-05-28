@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog as fd
+import os
 
 from .board import*
 
@@ -19,11 +20,17 @@ class App(tk.Frame):
         # Menu bar
         self.menu_bar = tk.Menu(self)
         self.file_menu = tk.Menu(self.menu_bar)
+        self.about_menu = tk.Menu(self.menu_bar)
 
         self.file_menu.add_command(label='Open...', command=self.load_board_handler)
         self.file_menu.add_command(label='Save as...', command=self.save_board_handler)
 
+        self.about_menu.add_command(label='GitHub repo', command=self.open_gh_page)
+
         self.menu_bar.add_cascade(label='File', menu=self.file_menu)
+        self.menu_bar.add_cascade(label='Help', menu=self.about_menu)
+
+        
         
         self.parent.config(menu=self.menu_bar)
 
@@ -113,3 +120,6 @@ class App(tk.Frame):
             tk.messagebox.showerror(title='Error loading data', message='Save file dimensions don\'t match window dimensions!')
         else:
             self.update_gui_cells()
+    
+    def open_gh_page(self):
+        os.system("start \"\" https://github.com/ShaderLight/game-of-life-python")
