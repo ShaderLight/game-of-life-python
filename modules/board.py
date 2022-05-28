@@ -84,7 +84,7 @@ class Board:
             for cell in row:
                 cell.reset()
 
-    def get_serialized_cells(self):
+    def get_serialized_cells(self) -> list[int]:
         serialized = []
 
         for row in self.cells:
@@ -93,7 +93,23 @@ class Board:
 
         return serialized
 
-    def save_to_file(self, filename):
+    def save_to_file(self, filename: str) -> None:
         with open(filename, mode='w') as f:
             to_dump = {'width': self.width, 'height': self.height, 'cells': self.get_serialized_cells()}
             json.dump(to_dump, f, indent=4)
+
+    def load_serialized_cells(self, cells: list[int]) -> None:
+        for y in range(self.height):
+            for x in range(self.width):
+                self.cells[y][x].state = cells[y*self.width + x]
+
+    def load_from_file(self, filename: str) -> int:
+        with open(filename, mode='r') as f:
+            content = json.load(f)
+        
+        if content['width'] == self.width and content['height'] == self.height:
+            self.load_serialized_cells(content['cells'])
+            return 0
+        else:
+            logging.warning(f'Incorrect save file dimensions {content["width"]}x{content["height"]}, expected {self.width}x{self.height}')
+            return -1

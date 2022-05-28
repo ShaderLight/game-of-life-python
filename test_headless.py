@@ -38,3 +38,17 @@ for i in range(10):
     board_data.switch_to_next_state_all()
     print(board_data)
     sleep(0.5)
+
+cls()
+
+print('Before saving')
+print(board_data)
+board_data.save_to_file('out/saved_oscillators.json')
+board_data.reset_all()
+
+print('Cleared')
+print(board_data)
+
+print('Loaded')
+board_data.load_from_file('out/saved_oscillators.json')
+print(board_data)
