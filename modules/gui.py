@@ -45,7 +45,7 @@ class App(tk.Frame):
         self.reset_button.grid(row=1, column=0, padx=5)
 
         self.tick_rate = tk.DoubleVar()
-        slider = tk.Scale(button_frame, from_=1, to=10, orient='horizontal', variable=self.tick_rate)
+        slider = tk.Scale(button_frame, from_=1, to=20, orient='horizontal', variable=self.tick_rate)
         slider.grid(row=1, column=1, padx=5)
 
         slider_label = tk.Label(button_frame, text='Tick frequency [Hz]')
