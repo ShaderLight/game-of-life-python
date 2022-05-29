@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog as fd
 import os
+from PIL import Image as ImagePIL, ImageTk
 
 from .board import*
 
@@ -14,6 +15,12 @@ class App(tk.Frame):
         self.board = Board(self.grid_width, self.grid_height)
         self.last_painted = None
         self.is_ticking = False
+
+        self.images = {}
+
+        self.images['alive'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/alive_border.png'), name='alive')
+        self.images['dead'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/dead_border.png'), name='dead')
+
         parent.bind('<B1-Motion>', self.toggle_gui_cell_handler)
         parent.bind('<ButtonRelease-1>', self.reset_last_painted_handler)
         parent.bind('<Button-1>', self.toggle_gui_cell_handler)
@@ -66,57 +73,41 @@ class App(tk.Frame):
         outer_button_frame.pack(side="top", fill="x", pady=20)
 
     def set_up_cell_frame(self) -> None:
-        self.cell_frame_container = tk.Frame(self)
-        self.cell_frame = tk.Frame(self.cell_frame_container)
+        cell_frame_container = tk.Frame(self)
+        self.cell_frame = tk.Canvas(cell_frame_container, height=20*self.grid_height, width=20*self.grid_width)
 
-        for y in range(self.grid_height):
-            for x in range(self.grid_width):
-                new_cell = tk.Frame(self.cell_frame, width=20, height=20)
-                new_cell.configure({"background": "White"})
-                new_cell.paintable = True
-                new_cell.grid(row=y, column=x, padx=1, pady=1)
-                new_cell.bind('<FocusIn>', self.toggle_gui_cell_handler)
+        for x in range(self.grid_width):
+            for y in range(self.grid_height):
+                self.set_cell((x, y), 0)
+
+
         self.cell_frame.pack(side='top')
-        self.cell_frame_container.pack(side='top', fill='x')
+        cell_frame_container.pack(side='top', fill='x')
+
+    def set_cell(self, coords: tuple[float], state: int) -> None:
+        x, y = ((p + 0.5) * 20 for p in coords)
+
+        if state:
+            self.cell_frame.create_image(x, y, image=self.images['alive'])
+        else:
+            self.cell_frame.create_image(x, y, image=self.images['dead'])
+
+    
+
 
     def update_gui_cells(self) -> None:
-        for key, value in self.cell_frame.children.items():
-            x = value.grid_info()['column']
-            y = value.grid_info()['row']
-            if self.board.state_at(x, y) == 1:
-                value.configure({"background": "Black"})
-            else:
-                value.configure({"background": "White"})
+        for x in range(self.grid_width):
+            for y in range(self.grid_height):
+                self.set_cell((x, y), self.board.state_at(x, y))
     
     def reset_last_painted_handler(self, event) -> None:
         self.last_painted = None
 
     def toggle_gui_cell_handler(self, event) -> None:
-        widget = event.widget.winfo_containing(event.x_root, event.y_root)
-
-        if not hasattr(widget, 'paintable'):
-            return
-
-        x = widget.grid_info()['column']
-        y = widget.grid_info()['row']
-
-        if self.last_painted == (x, y):
-            return
-
-        new_state = self.board.toggle_cell_at(x, y)
-
-        if new_state == 1:
-            widget.configure({"background": "Black"})
-        else:
-            widget.configure({"background": "White"})
-
-        self.last_painted = (x, y)
+        pass
 
     def reset_all_handler(self, event) -> None:
-        for widget in self.cell_frame.grid_slaves():
-            widget.configure({"background": "White"})
-
-        self.board.reset_all()
+        pass
     
     def next_state_handler(self, event) -> None:
         self.board.calculate_next_state_all()
