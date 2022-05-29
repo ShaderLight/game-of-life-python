@@ -1,3 +1,4 @@
+from math import floor
 import tkinter as tk
 from tkinter import filedialog as fd
 import os
@@ -21,9 +22,12 @@ class App(tk.Frame):
         self.images['alive'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/alive_border.png'), name='alive')
         self.images['dead'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/dead_border.png'), name='dead')
 
-        parent.bind('<B1-Motion>', self.toggle_gui_cell_handler)
+        self.set_up_button_frame()
+        self.set_up_cell_frame()
+
+        self.cell_frame.bind('<B1-Motion>', self.toggle_gui_cell_handler)
         parent.bind('<ButtonRelease-1>', self.reset_last_painted_handler)
-        parent.bind('<Button-1>', self.toggle_gui_cell_handler)
+        self.cell_frame.bind('<Button-1>', self.toggle_gui_cell_handler)
 
         # Menu bar
         self.menu_bar = tk.Menu(self)
@@ -40,8 +44,7 @@ class App(tk.Frame):
         
         self.parent.config(menu=self.menu_bar)
 
-        self.set_up_button_frame()
-        self.set_up_cell_frame()
+
 
     def set_up_button_frame(self) -> None:
         outer_button_frame = tk.Frame(self)
@@ -92,9 +95,6 @@ class App(tk.Frame):
         else:
             self.cell_frame.create_image(x, y, image=self.images['dead'])
 
-    
-
-
     def update_gui_cells(self) -> None:
         for x in range(self.grid_width):
             for y in range(self.grid_height):
@@ -104,10 +104,22 @@ class App(tk.Frame):
         self.last_painted = None
 
     def toggle_gui_cell_handler(self, event) -> None:
-        pass
+        coords = tuple(getattr(event, p)/20 for p in ['x', 'y'])
+        x, y = floor(coords[0]), floor(coords[1])
+
+
+        if (x, y) == self.last_painted:
+            return
+
+        self.board.toggle_cell_at(x, y)
+        new_state = self.board.state_at(x, y)
+        self.set_cell((x, y), new_state)
+
+        self.last_painted = (x, y)
 
     def reset_all_handler(self, event) -> None:
-        pass
+        self.board.reset_all()
+        self.update_gui_cells()
     
     def next_state_handler(self, event) -> None:
         self.board.calculate_next_state_all()
