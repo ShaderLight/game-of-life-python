@@ -23,15 +23,15 @@ class Board:
         for y in range(self.height):
             for x in range(self.width):
                 for pair in self.get_neighbouring_coords(x, y):
-                    self.cells[y][x].adjacent_cells.append (self.cells[pair[1]][pair[0]])
-                logging.debug(f"Cell ({x},{y}) received references to neighbours")
+                    self.cells[y][x].adjacent_cells.append(self.cells[pair[1]][pair[0]])
+                logging.debug(f"Cell ({x},{y}) received references to {len(self.cells[y][x].adjacent_cells)} neighbours")
 
     def get_neighbouring_coords(self, x: int, y: int) -> list[tuple[int]]:
         possible_coords = [(x, y+1), (x+1, y+1), (x+1, y), (x+1, y-1), (x, y-1), (x-1, y-1), (x-1, y), (x-1, y+1)]
         actual_coords = []
 
         for pair in possible_coords:
-            if pair[0] < self.width and pair[1] < self.height:
+            if pair[0] < self.width and pair[1] < self.height and pair[0] >= 0 and pair[1] >= 0:
                 actual_coords.append(pair)
 
         return actual_coords.copy()
