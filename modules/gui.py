@@ -53,19 +53,21 @@ class App(tk.Frame):
         button_frame.pack(side="top", fill="x", pady=20)
 
     def set_up_cell_frame(self) -> None:
-        self.cell_window = tk.Frame(self)
+        self.cell_frame_container = tk.Frame(self)
+        self.cell_frame = tk.Frame(self.cell_frame_container)
 
         for y in range(self.grid_height):
             for x in range(self.grid_width):
-                new_cell = tk.Frame(self.cell_window, width=20, height=20)
+                new_cell = tk.Frame(self.cell_frame, width=20, height=20)
                 new_cell.configure({"background": "White"})
                 new_cell.paintable = True
                 new_cell.grid(row=y, column=x, padx=1, pady=1)
                 new_cell.bind('<FocusIn>', self.toggle_gui_cell_handler)
-        self.cell_window.pack(side="top", fill="x")
+        self.cell_frame.pack(side='top')
+        self.cell_frame_container.pack(side='top', fill='x')
 
     def update_gui_cells(self) -> None:
-        for key, value in self.cell_window.children.items():
+        for key, value in self.cell_frame.children.items():
             x = value.grid_info()['column']
             y = value.grid_info()['row']
             if self.board.state_at(x, y) == 1:
@@ -98,7 +100,7 @@ class App(tk.Frame):
         self.last_painted = (x, y)
 
     def reset_all_handler(self, event) -> None:
-        for widget in self.cell_window.grid_slaves():
+        for widget in self.cell_frame.grid_slaves():
             widget.configure({"background": "White"})
 
         self.board.reset_all()

@@ -11,7 +11,8 @@ if __name__ == '__main__':
     root.title('The game of life')
     root.iconbitmap('glider.ico') 
 
-    main_frame = gui.App(root)
+    main_frame = gui.App(root, 60, 40)
     main_frame.pack(side="top", fill="both", expand=1)
+    root.eval('tk::PlaceWindow . center')
 
     root.mainloop()
