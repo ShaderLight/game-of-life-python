@@ -13,6 +13,7 @@ class App(tk.Frame):
         self.grid_height = grid_height
         self.board = Board(self.grid_width, self.grid_height)
         self.last_painted = None
+        self.is_ticking = False
         parent.bind('<B1-Motion>', self.toggle_gui_cell_handler)
         parent.bind('<ButtonRelease-1>', self.reset_last_painted_handler)
         parent.bind('<Button-1>', self.toggle_gui_cell_handler)
@@ -29,8 +30,6 @@ class App(tk.Frame):
 
         self.menu_bar.add_cascade(label='File', menu=self.file_menu)
         self.menu_bar.add_cascade(label='Help', menu=self.about_menu)
-
-        
         
         self.parent.config(menu=self.menu_bar)
 
@@ -38,19 +37,33 @@ class App(tk.Frame):
         self.set_up_cell_frame()
 
     def set_up_button_frame(self) -> None:
-        button_frame = tk.Frame(self)
+        outer_button_frame = tk.Frame(self)
+        button_frame = tk.Frame(outer_button_frame)
 
-        reset_button = tk.Button(button_frame, text='Reset')
-        reset_button.bind('<Button>', self.reset_all_handler)
-        reset_button.grid(row=0, column=0)
+        self.reset_button = tk.Button(button_frame, text='Reset')
+        self.reset_button.bind('<Button>', self.reset_all_handler)
+        self.reset_button.grid(row=1, column=0, padx=5)
 
-        next_state = tk.Button(button_frame, text='Next state')
-        next_state.bind('<Button>', self.next_state_handler)
-        next_state.grid(row=0, column=1)
+        self.tick_rate = tk.DoubleVar()
+        slider = tk.Scale(button_frame, from_=1, to=10, orient='horizontal', variable=self.tick_rate)
+        slider.grid(row=1, column=1, padx=5)
+
+        slider_label = tk.Label(button_frame, text='Tick frequency [Hz]')
+        slider_label.grid(row=0, column=1, padx=5)
+
+        auto_ticking_button = tk.Button(button_frame, text='Start/stop')
+        auto_ticking_button.bind('<Button>', self.auto_ticking_handler)
+        auto_ticking_button.grid(row=1, column=2, padx=5)
+
+        self.next_state = tk.Button(button_frame, text='Next state')
+        self.next_state.bind('<Button>', self.next_state_handler)
+        self.next_state.grid(row=1, column=3, padx=5)
 
         button_frame.grid_columnconfigure((0,1), weight=1, uniform="column")
+        button_frame.pack()
 
-        button_frame.pack(side="top", fill="x", pady=20)
+
+        outer_button_frame.pack(side="top", fill="x", pady=20)
 
     def set_up_cell_frame(self) -> None:
         self.cell_frame_container = tk.Frame(self)
@@ -110,11 +123,11 @@ class App(tk.Frame):
         self.board.switch_to_next_state_all()
         self.update_gui_cells()
 
-    def save_board_handler(self):
+    def save_board_handler(self) -> None:
         filename = fd.asksaveasfilename(initialfile = 'saved.json', defaultextension=".json", filetypes=[("All Files","*.*"),("JSON File","*.json")])
         self.board.save_to_file(filename)
 
-    def load_board_handler(self):
+    def load_board_handler(self) -> None:
         filename = fd.askopenfilename(defaultextension=".json", filetypes=[("All Files","*.*"),("JSON File","*.json")])
         status = self.board.load_from_file(filename)
 
@@ -123,5 +136,29 @@ class App(tk.Frame):
         else:
             self.update_gui_cells()
     
-    def open_gh_page(self):
+    def open_gh_page(self) -> None:
         os.system("start \"\" https://github.com/ShaderLight/game-of-life-python")
+
+    def auto_ticking_handler(self, event) -> None:
+        if self.is_ticking:
+            self.is_ticking = False
+            self.enable_buttons()
+        else:
+            self.is_ticking = True
+            self.disable_buttons()
+            self.ticking_loop()
+
+    def disable_buttons(self) -> None:
+        self.reset_button.configure(state='disabled')
+        self.next_state.configure(state='disabled')
+
+    def enable_buttons(self) -> None:
+        self.reset_button.configure(state='normal')
+        self.next_state.configure(state='normal')
+
+    def ticking_loop(self) -> None:
+        self.board.calculate_next_state_all()
+        self.board.switch_to_next_state_all()
+        self.update_gui_cells()
+        if self.is_ticking:
+            self.parent.after(int(1000/self.tick_rate.get()), self.ticking_loop)

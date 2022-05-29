@@ -33,7 +33,7 @@ class Cell:
         self.state_next = None
 
     # For simple next state calculation
-    def __int__(self):
+    def __int__(self) -> int:
         return self.state
 
     def __str__(self) -> str:
