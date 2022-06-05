@@ -14,6 +14,7 @@ class App(tk.Frame):
         self.board = Board(self.grid_width, self.grid_height)
         self.last_painted = None
         self.is_ticking = False
+        self.cell_widgets = []
         parent.bind('<B1-Motion>', self.toggle_gui_cell_handler)
         parent.bind('<ButtonRelease-1>', self.reset_last_painted_handler)
         parent.bind('<Button-1>', self.toggle_gui_cell_handler)
@@ -70,24 +71,40 @@ class App(tk.Frame):
         self.cell_frame = tk.Frame(self.cell_frame_container)
 
         for y in range(self.grid_height):
+            temp_row = []
             for x in range(self.grid_width):
                 new_cell = tk.Frame(self.cell_frame, width=20, height=20)
                 new_cell.configure({"background": "White"})
                 new_cell.paintable = True
                 new_cell.grid(row=y, column=x, padx=1, pady=1)
                 new_cell.bind('<FocusIn>', self.toggle_gui_cell_handler)
+                temp_row.append(new_cell)
+            self.cell_widgets.append(temp_row)
         self.cell_frame.pack(side='top')
         self.cell_frame_container.pack(side='top', fill='x')
 
     def update_gui_cells(self) -> None:
-        for key, value in self.cell_frame.children.items():
-            x = value.grid_info()['column']
-            y = value.grid_info()['row']
-            if self.board.state_at(x, y) == 1:
-                value.configure({"background": "Black"})
+        for cell in self.board.changed_cells:
+            curr_widget = self.cell_widgets[cell.y][cell.x]
+
+            if cell.state == 1:
+                curr_widget.configure({"background": "Black"})
             else:
-                value.configure({"background": "White"})
-    
+                curr_widget.configure({"background": "White"})
+
+        self.board.clear_changed_cells_mem()
+
+    def force_update_all_cells(self) -> None:
+        for y in range(self.grid_height):
+            for x in range(self.grid_width):
+                curr_widget = self.cell_widgets[y][x]
+                if self.board.state_at(x, y) == 1:
+                    curr_widget.configure({"background": "Black"})
+                else:
+                    curr_widget.configure({"background": "White"})
+
+        self.board.clear_changed_cells_mem()
+
     def reset_last_painted_handler(self, event) -> None:
         self.last_painted = None
 
@@ -134,7 +151,7 @@ class App(tk.Frame):
         if status == -1:
             tk.messagebox.showerror(title='Error loading data', message='Save file dimensions don\'t match window dimensions!')
         else:
-            self.update_gui_cells()
+            self.force_update_all_cells()
     
     def open_gh_page(self) -> None:
         os.system("start \"\" https://github.com/ShaderLight/game-of-life-python")

@@ -8,10 +8,11 @@ class Board:
         self.width = width
         self.height = height
         self.cells = []
+        self.changed_cells = set()
 
         self.generate_cells()
         self.assign_neighbours()
-    
+
     def generate_cells(self):
         for y in range(self.height):
             temporary_row = []
@@ -39,12 +40,15 @@ class Board:
     def calculate_next_state_all(self) -> None:
         for row in self.cells:
             for cell in row:
-                cell.calculate_next_state()
+                if cell.calculate_next_state():
+                    self.changed_cells.add(cell)
 
     def switch_to_next_state_all(self) -> None:
-        for row in self.cells:
-            for cell in row:
-                cell.switch_to_next_state()
+        for cell in self.changed_cells:
+            cell.switch_to_next_state()
+
+    def clear_changed_cells_mem(self) -> None:
+        self.changed_cells.clear()
 
     def state_at(self, x: int, y: int) -> int:
         return self.cells[y][x].state
