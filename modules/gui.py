@@ -96,10 +96,19 @@ class App(tk.Frame):
             self.cell_frame.create_image(x, y, image=self.images['dead'])
 
     def update_gui_cells(self) -> None:
+        for cell in self.board.changed_cells:
+            self.set_cell((cell.x, cell.y), cell.state)
+
+        print(len(self.board.changed_cells))
+        self.board.clear_changed_cells_mem()
+
+    def force_update_all_cells(self):
         for x in range(self.grid_width):
             for y in range(self.grid_height):
                 self.set_cell((x, y), self.board.state_at(x, y))
-    
+        
+        self.board.clear_changed_cells_mem()
+
     def reset_last_painted_handler(self, event) -> None:
         self.last_painted = None
 
@@ -137,7 +146,7 @@ class App(tk.Frame):
         if status == -1:
             tk.messagebox.showerror(title='Error loading data', message='Save file dimensions don\'t match window dimensions!')
         else:
-            self.update_gui_cells()
+            self.force_update_all_cells()
     
     def open_gh_page(self) -> None:
         os.system("start \"\" https://github.com/ShaderLight/game-of-life-python")
