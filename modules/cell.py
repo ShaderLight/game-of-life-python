@@ -1,6 +1,3 @@
-from xmlrpc.client import boolean
-
-
 class Cell:
     def __init__(self, x: int, y: int) -> None:
         self.state = 0 # 0 - dead, 1 - alive
