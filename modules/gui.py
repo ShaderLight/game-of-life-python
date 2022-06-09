@@ -2,7 +2,6 @@ from math import floor
 import tkinter as tk
 from tkinter import filedialog as fd
 import os
-from PIL import Image as ImagePIL, ImageTk
 
 from .board import*
 
@@ -16,11 +15,6 @@ class App(tk.Frame):
         self.board = Board(self.grid_width, self.grid_height)
         self.last_painted = None
         self.is_ticking = False
-
-        self.images = {}
-
-        self.images['alive'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/alive_border.png'), name='alive')
-        self.images['dead'] = ImageTk.PhotoImage(ImagePIL.open('modules/images/dead_border.png'), name='dead')
 
         self.set_up_button_frame()
         self.set_up_cell_frame()
@@ -91,15 +85,14 @@ class App(tk.Frame):
         x, y = ((p + 0.5) * 20 for p in coords)
 
         if state:
-            self.cell_frame.create_image(x, y, image=self.images['alive'])
+            self.cell_frame.create_rectangle(x-9, y-9, x+9, y+9, fill='black')
         else:
-            self.cell_frame.create_image(x, y, image=self.images['dead'])
+            self.cell_frame.create_rectangle(x-9, y-9, x+9, y+9, fill='white')
 
     def update_gui_cells(self) -> None:
         for cell in self.board.changed_cells:
             self.set_cell((cell.x, cell.y), cell.state)
 
-        print(len(self.board.changed_cells))
         self.board.clear_changed_cells_mem()
 
     def force_update_all_cells(self):
@@ -128,7 +121,7 @@ class App(tk.Frame):
 
     def reset_all_handler(self, event) -> None:
         self.board.reset_all()
-        self.update_gui_cells()
+        self.force_update_all_cells()
     
     def next_state_handler(self, event) -> None:
         self.board.calculate_next_state_all()
@@ -172,5 +165,6 @@ class App(tk.Frame):
         self.board.calculate_next_state_all()
         self.board.switch_to_next_state_all()
         self.update_gui_cells()
+
         if self.is_ticking:
             self.parent.after(int(1000/self.tick_rate.get()), self.ticking_loop)
