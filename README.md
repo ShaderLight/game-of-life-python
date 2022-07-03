@@ -10,7 +10,7 @@ A simple implementation of The game of life in Python.
 
 ## Installation
 The project does not require any external libraries to work, aside from `Python` itself (should work with any version from `3.5` and above), as
-it was written using only `tkinter` and `logging`.
+it was written using only `tkinter`, `logging`, `json` and `os`.
 
 The app can be run in two ways:
 - By running the `run.py` script
