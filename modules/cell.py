@@ -1,6 +1,16 @@
 class Cell:
+    """
+    Represents a single cell that can be dead or alive.
+    It becomes alive if it has 3 active neighbours, maintains
+    it's previous state if it has 2 active neighbours, otherwise dies.
+
+    Attributes:
+        state: 0 - dead, 1 - alive
+        x, y: Position in the grid of cells.
+        adjacent_cells: List of references to neighbouring cell objects.
+    """
     def __init__(self, x: int, y: int) -> None:
-        self.state = 0 # 0 - dead, 1 - alive
+        self.state = 0
         self.state_next = None
         self.adjacent_cells = []
         self.x = x
@@ -37,13 +47,15 @@ class Cell:
         self.state = 0
         self.state_next = None
 
-    # For simple next state calculation
     def __int__(self) -> int:
+        """For simpler next state calculation."""
         return self.state
 
     def __str__(self) -> str:
+        """For debugging purposes."""
         return f"Cell at ({self.x}, {self.y}), with state {self.state}"
 
 
 class NextStateNotCalculatedError(Exception):
+    """Raised when attempting to switch to next state without calculating it beforehand."""
     pass
