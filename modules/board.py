@@ -4,6 +4,18 @@ import json
 from .cell import*
 
 class Board:
+    """
+    A data structure representing a board (grid) of cells, allows easy mass management of cells.
+    Can load and save the state of cells to json files.
+    Can somewhat function as a standalone game of life in text mode, because of pretty __repr__ and __str__ methods.
+
+    Attributes:
+        width, height: Dimensions of the board, measured in cells.
+        cells: A list of lists of cells. Outer list contains rows, so elements should be accessed
+            like that - cells[y][x]
+        changed_cells - A set of cells that have changed state since last switch, used for optimisation
+            purposes.
+    """
     def __init__(self, width: int, height: int) -> None:
         self.width = width
         self.height = height
@@ -14,6 +26,7 @@ class Board:
         self.assign_neighbours()
 
     def generate_cells(self):
+        """Populates the board by creating cells."""
         for y in range(self.height):
             temporary_row = []
             for x in range(self.width):
@@ -28,6 +41,7 @@ class Board:
                 logging.debug(f"Cell ({x},{y}) received references to {len(self.cells[y][x].adjacent_cells)} neighbours")
 
     def get_neighbouring_coords(self, x: int, y: int) -> list[tuple[int]]:
+        """Returns coordinates of all neighbouring cells, is aware of grid dimensions."""
         possible_coords = [(x, y+1), (x+1, y+1), (x+1, y), (x+1, y-1), (x, y-1), (x-1, y-1), (x-1, y), (x-1, y+1)]
         actual_coords = []
 
