@@ -1,4 +1,4 @@
-# game-of-life-python ![GitHub last commit](https://img.shields.io/github/last-commit/shaderlight/game-of-life-python)
+# game-of-life-python ![GitHub last commit](https://img.shields.io/github/last-commit/shaderlight/game-of-life-python) ![GitHub](https://img.shields.io/github/license/shaderlight/game-of-life-python)
 A simple implementation of The game of life in Python.
 
 ## Table of contents
